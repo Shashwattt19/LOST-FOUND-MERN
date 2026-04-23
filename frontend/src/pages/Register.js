@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -11,11 +13,12 @@ function Register() {
 
   const register = async () => {
     try {
-      await axios.post("http://localhost:5000/api/register", form);
+      await axios.post(`${API}/api/register`, form);
       alert("Registered successfully");
       window.location = "/";
-    } catch {
-      alert("Email already exists");
+    } catch (err) {
+      console.error(err);
+      alert("Email already exists or server error");
     }
   };
 
@@ -27,12 +30,14 @@ function Register() {
         <input
           className="form-control mb-2"
           placeholder="Name"
+          value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <input
           className="form-control mb-2"
           placeholder="Email"
+          value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
@@ -40,6 +45,7 @@ function Register() {
           className="form-control mb-3"
           type="password"
           placeholder="Password"
+          value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 

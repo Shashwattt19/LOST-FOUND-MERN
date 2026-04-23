@@ -2,21 +2,24 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const login = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+      const res = await axios.post(`${API}/api/login`, {
         email,
         password,
       });
 
       localStorage.setItem("token", res.data.token);
       window.location = "/dashboard";
-    } catch {
-      alert("Invalid credentials");
+    } catch (err) {
+      console.error(err);
+      alert("Invalid credentials or server error");
     }
   };
 
@@ -28,6 +31,7 @@ function Login() {
         <input
           className="form-control mb-3"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -35,6 +39,7 @@ function Login() {
           className="form-control mb-3"
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 

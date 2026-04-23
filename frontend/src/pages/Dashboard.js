@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Dashboard() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({
@@ -17,8 +19,13 @@ function Dashboard() {
 
   // Fetch items
   const fetchItems = async () => {
-    const res = await axios.get("http://localhost:5000/api/items");
-    setItems(res.data);
+    try {
+      const res = await axios.get(`${API}/api/items`);
+      setItems(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching items");
+    }
   };
 
   useEffect(() => {
@@ -30,14 +37,14 @@ function Dashboard() {
     try {
       if (editId) {
         await axios.put(
-          `http://localhost:5000/api/items/${editId}`,
+          `${API}/api/items/${editId}`,
           form,
           { headers: { Authorization: token } }
         );
         setEditId(null);
       } else {
         await axios.post(
-          "http://localhost:5000/api/items",
+          `${API}/api/items`,
           form,
           { headers: { Authorization: token } }
         );
@@ -54,16 +61,22 @@ function Dashboard() {
 
       fetchItems();
     } catch (err) {
+      console.error(err);
       alert("Error saving item");
     }
   };
 
   // Delete item
   const deleteItem = async (id) => {
-    await axios.delete(`http://localhost:5000/api/items/${id}`, {
-      headers: { Authorization: token }
-    });
-    fetchItems();
+    try {
+      await axios.delete(`${API}/api/items/${id}`, {
+        headers: { Authorization: token }
+      });
+      fetchItems();
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting item");
+    }
   };
 
   // Edit item
@@ -80,10 +93,15 @@ function Dashboard() {
 
   // Search
   const searchItem = async () => {
-    const res = await axios.get(
-      `http://localhost:5000/api/items/search?name=${search}`
-    );
-    setItems(res.data);
+    try {
+      const res = await axios.get(
+        `${API}/api/items/search?name=${search}`
+      );
+      setItems(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Search failed");
+    }
   };
 
   // Logout
@@ -136,7 +154,6 @@ function Dashboard() {
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           />
 
-          {/* ✅ CONTACT INFO (ADDED) */}
           <input
             className="form-control mb-2"
             placeholder="Contact Info"
